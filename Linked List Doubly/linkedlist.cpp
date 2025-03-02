@@ -1,8 +1,8 @@
 // TODO entire implementation and add more header file/s as needed
 #include <iostream>
 #include <cmath>
-#include "node.cpp"
-#include "list.cpp"
+#include "node.hpp"
+#include "list.hpp"
 using namespace std;
 
 class LinkedList : public List {
@@ -17,9 +17,10 @@ public:
         tail = NULL;
     }
 
-    void insert(int num) override {
-        node* n = new node(num);
-        if (!head) {
+    void insert(int num) {
+        node* n = new node();
+        n->num = num;
+        if(!head){
             head = tail = n;
         } else {
             tail->next = n;
@@ -29,38 +30,43 @@ public:
         _size++;
     }
 
-    int get(int pos) override {
-        if (pos < 1 || pos > _size) throw out_of_range("Invalid position");
-        node* curr = (pos <= _size / 2) ? head : tail;
-        int index = (pos <= _size / 2) ? 1 : _size;
-        while (curr) {
-            if (index == pos) return curr->num;
-            curr = (pos <= _size / 2) ? curr->next : curr->prev;
-            index += (pos <= _size / 2) ? 1 : -1;
-        }
-        return -1;
-    }
-
-    int remove(int num) override {
+    int get(int pos) {
+        if(pos > _size || pos < 1) throw out_of_range("Invalid position");
+        
         node* curr = head;
-        int pos = 1;
-        while (curr) {
-            if (curr->num == num) {
-                if (curr == head) head = head->next;
-                if (curr == tail) tail = tail->prev;
-                if (curr->prev) curr->prev->next = curr->next;
-                if (curr->next) curr->next->prev = curr->prev;
-                delete curr;
-                _size--;
-                return pos;
+        int index = 0;
+        
+        while(curr){
+            index++;
+            if(index == pos){
+                return curr->num;
             }
             curr = curr->next;
-            pos++;
         }
         return 0;
     }
 
-    void print() override {
+    int remove(int num) {
+        node* curr = head;
+        int pos = 0;
+        
+        while(curr){
+            pos++;
+            if(curr->num == num){
+                if(curr->prev) curr->prev->next = curr->next;
+                if(curr->next) curr->next->prev = curr->prev;
+                if(head == curr) head = curr->next;
+                if(tail == curr) tail = curr->prev;
+                _size--;
+                return pos;
+            }
+            curr = curr->next;
+        }
+        
+        return 0;
+    }
+
+    void print() {
         if (!head) {
             cout << "FROM HEAD: (none)\nFROM TAIL: (none)\n";
             return;
@@ -82,57 +88,70 @@ public:
         cout << endl;
     }
 
-    int size() override {
+    int size() {
         return _size;
     }
 
-    bool isEmpty() override {
+    bool isEmpty() {
         return _size == 0;
     }
 
-    void addAt(int num, int pos) override {
+    void addAt(int num, int pos) {
+        
         if (pos < 1 || pos > _size + 1) throw out_of_range("Invalid position");
-        node* n = new node(num);
-        if (pos == 1) {
-            n->next = head;
-            if (head) head->prev = n;
-            head = n;
-            if (!_size) tail = n;
-        } else if (pos == _size + 1) {
-            insert(num);
+        
+        node* curr = head;
+        node* newNode = new node();
+        newNode->num = num;
+        int position = 0;
+        
+        if(pos == 1){
+            newNode->next = head;
+            if(head) head->prev = newNode;
+            head = newNode;
+            if(isEmpty()) tail = newNode;
+            _size++;
             return;
-        } else {
-            node* curr = (pos <= _size / 2) ? head : tail;
-            int index = (pos <= _size / 2) ? 1 : _size;
-            while (curr) {
-                if (index == pos) break;
-                curr = (pos <= _size / 2) ? curr->next : curr->prev;
-                index += (pos <= _size / 2) ? 1 : -1;
-            }
-            n->prev = curr->prev;
-            n->next = curr;
-            curr->prev->next = n;
-            curr->prev = n;
         }
-        _size++;
+        
+        if(pos == _size+1){
+            insert(newNode->num);
+            return;
+        }
+        
+        while(curr){
+            position++;
+            if(position == pos){
+                _size++;
+                if(curr->prev){
+                     curr->prev->next = newNode;
+                     newNode->prev = curr->prev;
+                }
+                curr->prev = newNode;
+                newNode->next = curr;
+                return;
+            }
+            curr = curr->next;
+        }
+        return;
     }
 
-    int removeAt(int pos) override {
-        if (pos < 1 || pos > _size) throw out_of_range("Invalid position");
-        node* curr = (pos <= _size / 2) ? head : tail;
-        int index = (pos <= _size / 2) ? 1 : _size;
-        while (curr) {
-            if (index == pos) break;
-            curr = (pos <= _size / 2) ? curr->next : curr->prev;
-            index += (pos <= _size / 2) ? 1 : -1;
+    int removeAt(int pos) {
+        node* curr = head;
+        int posi = 0, deleted = 0;
+        
+        if(pos > _size || pos < 1) throw out_of_range("Invalid position");
+        
+        while(curr){
+            posi++;
+            if(pos == posi){
+                deleted = curr->num;
+                remove(curr->num);
+                return deleted;
+            }
+            curr = curr->next;
         }
-        int removedVal = curr->num;
-        if (curr == head) head = head->next;
-        if (curr == tail) tail = tail->prev;
-        if (curr->prev) curr->prev->next = curr->next;
-        if (curr->next) curr->next->prev = curr->prev;
-        delete curr;
-        _size--;
-        return removedVal;
+        
+        return 0;
     }
 };
