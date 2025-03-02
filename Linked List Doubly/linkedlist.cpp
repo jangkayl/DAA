@@ -30,7 +30,7 @@ public:
     }
 
     int get(int pos) override {
-        if (pos < 1 || pos > _size) throw std::out_of_range("Invalid position");
+        if (pos < 1 || pos > _size) throw out_of_range("Invalid position");
         node* curr = (pos <= _size / 2) ? head : tail;
         int index = (pos <= _size / 2) ? 1 : _size;
         while (curr) {
@@ -62,24 +62,24 @@ public:
 
     void print() override {
         if (!head) {
-            std::cout << "FROM HEAD: (none)\nFROM TAIL: (none)\n";
+            cout << "FROM HEAD: (none)\nFROM TAIL: (none)\n";
             return;
         }
-        std::cout << "FROM HEAD: ";
+        cout << "FROM HEAD: ";
         node* curr = head;
         while (curr) {
-            std::cout << curr->num;
-            if (curr->next) std::cout << " -> ";
+            cout << curr->num;
+            if (curr->next) cout << " -> ";
             curr = curr->next;
         }
-        std::cout << "\nFROM TAIL: ";
+        cout << "\nFROM TAIL: ";
         curr = tail;
         while (curr) {
-            std::cout << curr->num;
-            if (curr->prev) std::cout << " <- ";
+            cout << curr->num;
+            if (curr->prev) cout << " <- ";
             curr = curr->prev;
         }
-        std::cout << std::endl;
+        cout << endl;
     }
 
     int size() override {
@@ -91,7 +91,7 @@ public:
     }
 
     void addAt(int num, int pos) override {
-        if (pos < 1 || pos > _size + 1) throw std::out_of_range("Invalid position");
+        if (pos < 1 || pos > _size + 1) throw out_of_range("Invalid position");
         node* n = new node(num);
         if (pos == 1) {
             n->next = head;
@@ -118,7 +118,7 @@ public:
     }
 
     int removeAt(int pos) override {
-        if (pos < 1 || pos > _size) throw std::out_of_range("Invalid position");
+        if (pos < 1 || pos > _size) throw out_of_range("Invalid position");
         node* curr = (pos <= _size / 2) ? head : tail;
         int index = (pos <= _size / 2) ? 1 : _size;
         while (curr) {

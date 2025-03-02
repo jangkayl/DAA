@@ -67,4 +67,4 @@ int main()
         }
     } while (ch != 'x');
     return 0;
-};
+}
